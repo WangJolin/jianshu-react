@@ -62,7 +62,8 @@ class Header extends Component {
 	}
 
 	getListArea() {
-		if(this.props.focused) {
+		const {focused, list} this.props
+		if(focused) {
 			return (
 				<SearchInfo>
 					<SearchInfoTitle>
@@ -71,8 +72,8 @@ class Header extends Component {
 					</SearchInfoTitle>
 					<SearchInfoList>
 					{
-						this.props.list.map((item, index) => {
-							return <SearchInfoItem key={index}>{item}</SearchInfoItem>
+						list.map((item, index) => {
+							return <SearchInfoItem key={index}> {item} </SearchInfoItem>
 						})
 					}
 					</SearchInfoList>
