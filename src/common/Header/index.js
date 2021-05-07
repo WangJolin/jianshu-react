@@ -22,8 +22,15 @@ import { actionCreators }  from './store';
 
 class Header extends Component {
 	
+	constructor(props) {
+		super(props);
+		this.state = {
+			spinIcon: React.createRef(null)
+		}
+	}
+	
 	render() {
-		const { focused, handleInputFocus, handleInputBlur } = this.props;
+		const { focused, list, handleInputFocus, handleInputBlur } = this.props;
 		const nodeRef = React.createRef(null);
 
 		return (
@@ -41,11 +48,11 @@ class Header extends Component {
 						<CSSTransition timeout={200} in={focused} nodeRef={nodeRef}>
 							<NavSearch
 								className={focused ? 'focused' : ''}
-								onFocus={handleInputFocus}
+								onFocus={() => handleInputFocus(list)}
 								onBlur={handleInputBlur}
 							/>
 						</CSSTransition>
-						<span className={focused ? 'focused iconfont' : 'iconfont'}>&#xe614;</span>
+						<span className={focused ? 'focused iconfont zoom' : 'iconfont zoom'}>&#xe614;</span>
 						{/* 热门搜索 */}
 						{ this.getListArea() }
 					</SearchWrapper>
@@ -62,20 +69,44 @@ class Header extends Component {
 	}
 
 	getListArea() {
-		const {focused, list} this.props
-		if(focused) {
+		const {
+			focused,
+			list, 
+			page, 
+			totalPage, 
+			mouseIn, 
+			handleMouseEnter, 
+			handleMouseLeave, 
+			handleChangePage 
+		} = this.props
+		
+		const newList = list.toJS()
+		const pageList = []
+
+		if(newList.length) {
+			for (let i = (page - 1) * 10; i < page * 10; i++) {
+				pageList.push(
+					<SearchInfoItem key={newList[i]}> 
+						{ newList[i] } 
+					</SearchInfoItem>
+				)
+			}
+		}
+
+		if(focused || mouseIn) {
 			return (
-				<SearchInfo>
+				<SearchInfo 
+					onMouseEnter={handleMouseEnter} 
+					onMouseLeave={handleMouseLeave}>
 					<SearchInfoTitle>
 						热门搜索
-						<SearchInfoSwitch>换一批</SearchInfoSwitch>
+						<SearchInfoSwitch onClick={() => handleChangePage(page, totalPage, this.spinIcon)}>
+							<span ref={(icon) => this.spinIcon = icon} className="iconfont spin">&#xe851;</span>
+							换一批
+						</SearchInfoSwitch>
 					</SearchInfoTitle>
 					<SearchInfoList>
-					{
-						list.map((item, index) => {
-							return <SearchInfoItem key={index}> {item} </SearchInfoItem>
-						})
-					}
+					{ pageList }
 					</SearchInfoList>
 				</SearchInfo>
 			)
@@ -89,20 +120,43 @@ class Header extends Component {
 const mapStateToProps = state => {
 	return {
 		focused: state.getIn(['header', 'focused']),
-		list: state.getIn(['header', 'list'])
+		list: state.getIn(['header', 'list']),
+		page: state.getIn(['header', 'page']),
+		totalPage: state.getIn(['header', 'totalPage']),
+		mouseIn: state.getIn(['header', 'mouseIn']),
 	};
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		handleInputFocus() {
+		handleInputFocus(list) {
 			// Ajax 请求搜索数据
-			dispatch(actionCreators.getList())
+			(list.size === 0) && dispatch(actionCreators.getList())			
 			dispatch(actionCreators.searchFocus());
 		},
 		handleInputBlur() {
 			dispatch(actionCreators.searchBlur());
 		},
+		handleMouseEnter() {
+			dispatch(actionCreators.mouseEnter())
+		},
+		handleMouseLeave() {
+			dispatch(actionCreators.mouseLeave())
+		},
+		handleChangePage(page, totalPage, spin) {
+			// 换一批 的 动画效果
+			let originAngle = spin.style.transform.replace(/[^0-9]/ig, '')
+
+			if(originAngle) {
+				originAngle = parseInt(originAngle, 10)
+			} else {
+				originAngle = 0
+			}
+			spin.style.transform = `rotate(${originAngle + 360}deg)`
+
+			let newPage = (page < totalPage) ? page + 1 : 1
+			dispatch(actionCreators.changePage(newPage))
+		}
 	};
 };
 
