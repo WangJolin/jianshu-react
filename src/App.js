@@ -1,5 +1,13 @@
-function App() {
-	return <div className="App">App</div>;
-}
+import React, { Component } from 'react';
+import Header from './common/Header/index';
 
-export default App;
+class App extends Component {
+  render() {
+	return (
+	  	<div>
+	  		<Header />
+		</div>
+	);
+  }
+}
+export default App
