@@ -1,15 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Header from './common/Header/index';
 import store from './store/index';
-import { Provider } from 'react-redux';
 
-class App extends Component {
-	render() {
-		return (
+function App() {
+	return (
+		<Router>
 			<Provider store={store}>
-				<Header />
+				<Route path="/" component={Header}></Route>
 			</Provider>
-		);
-	}
+		</Router>
+	);
 }
+
 export default App;
