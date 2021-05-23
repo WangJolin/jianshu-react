@@ -104,7 +104,8 @@ export const SearchInfo = styled.div`
 	top: 60px;
 	width: 260px;
 	padding: 20px;
-	box-shadow: 0 0 8px rgba(0, 0, 0, .2);
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+	background: white;
 `;
 
 export const SearchInfoTitle = styled.div`
@@ -123,7 +124,7 @@ export const SearchInfoSwitch = styled.span`
 		float: left;
 		font-size: 12px;
 		margin-right: 2px;
-		transition: all .2s ease-in;
+		transition: all 0.2s ease-in;
 		transform-origin: center center;
 	}
 `;
